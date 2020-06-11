@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'rspec'
-require_relative '../lib/models/graph'
+require_relative '../../lib/models/graph'
 
 RSpec.describe Graph do
   it 'is initialized with no argument' do
