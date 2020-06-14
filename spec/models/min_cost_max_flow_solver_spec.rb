@@ -4,6 +4,10 @@ require 'rspec'
 require_relative '../../lib/models/min_cost_max_flow_solver'
 
 describe Min_Cost_Max_Flow_Solver do
+  it 'affirms is a solver when asked' do
+    expect(Min_Cost_Max_Flow_Solver.new.solver?).to be true
+  end
+
   it 'solves max flow with min cost' do
     graph = {
       from: {

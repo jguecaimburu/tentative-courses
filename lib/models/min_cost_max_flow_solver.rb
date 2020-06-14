@@ -1,4 +1,4 @@
-# frozen_string_solver: true
+# frozen_string_literal: true
 
 class Min_Cost_Max_Flow_Solver
   class ValueError < StandardError; end
@@ -20,6 +20,10 @@ class Min_Cost_Max_Flow_Solver
       sink_key: sink_key
     )
     process_solution(graph)
+  end
+
+  def solver?
+    true
   end
 
   private
