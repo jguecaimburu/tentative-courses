@@ -2,6 +2,7 @@
 
 require 'rspec'
 require_relative '../../lib/models/graph'
+require_relative '../../lib/models/min_cost_max_flow_solver'
 
 RSpec.describe Graph do
   it 'is initialized with no argument' do
@@ -63,5 +64,42 @@ RSpec.describe Graph do
     expect(graph.graph[:from][2][:to].size).to eq(2)
     expect(graph.graph[:from][3][:to].size).to eq(1)
     expect(graph.graph[:from][4][:to].size).to eq(0)
+  end
+
+  it 'returns truthy if solver added correctly' do
+    solver = Min_Cost_Max_Flow_Solver.new
+    expect(Graph.new.add_solver(solver)).to be_truthy
+  end
+
+  it 'raise TypeError if try to add wrong object to solver' do
+    expect{ Graph.new.add_solver('solver') }.to raise_error(TypeError)
+  end
+
+  it 'sets source if key is present in graph' do
+    graph = Graph.new.add_edge({ from: 1, to: 2, data: '' })
+    graph.source_key = 1
+    expect(graph.source_key).to eq(1)
+  end
+
+  it 'does not set source if key is not present in graph' do
+    graph = Graph.new.add_edge({ from: 1, to: 2, data: '' })
+    graph.source_key = 3
+    expect(graph.source_key).to be_falsy
+  end
+
+  it 'sets sink if key is present in graph' do
+    graph = Graph.new.add_edge({ from: 1, to: 2, data: '' })
+    graph.sink_key = 2
+    expect(graph.sink_key).to eq(2)
+  end
+
+  it 'does not set sink if key is not present in graph' do
+    graph = Graph.new.add_edge({ from: 1, to: 2, data: '' })
+    graph.sink_key = 3
+    expect(graph.sink_key).to be_falsy
+  end
+
+  it 'returns falsy if try to solve but no solver added' do
+    expect(Graph.new.solve).to be_falsy
   end
 end
