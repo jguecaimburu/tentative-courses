@@ -1,12 +1,21 @@
 # frozen_string_literal: true
 
-require_relative 'graph'
-require_relative 'min_cost_max_flow_solver'
+require 'set'
+require_relative 'assigner'
 
-class Course_Scheduler
-  def initialize
-    @students = []
-    @teachers = []
+class CourseScheduler
+  DEFAULT_TYPE_SCHEDULING_PRIORITIES = %w[GROUP INDIVIDUAL].freeze
+  DEFAULT_LEVEL_SCHEDULING_PRIORITIES = %w[INTERMEDIATE UPPER-INTERMEDIATE
+                                           PRE-INTERMEDIATE ADVANCED
+                                           BEGINNER].freeze
+
+  def initialize(course_size: 6)
+    raise TypeError unless course_size.is_a? Integer
+
+    @course_size = course_size
+    @students = Set.new
+    @teachers = Set.new
+    @processed = {}
   end
 
   def bulk_add_students(students)
@@ -14,7 +23,10 @@ class Course_Scheduler
   end
 
   def add_student(student)
-    student.student? && @students << student
+    if student.student?
+      @processed[student.id].nil? && @processed[student.id] = false
+      @students << student
+    end
   rescue NoMethodError
     puts "#{student} is not a student. Not added"
   end
@@ -29,11 +41,17 @@ class Course_Scheduler
     puts "#{teacher} is not a teacher. Not added"
   end
 
-  def schedule_courses(scheduling_orders: nil)
+  # Scheduling order format:
+  # {
+  #   student_type: 'INDIVIDUAL' or 'GROUP',
+  #   level: valid student level
+  #   tolerance (optional): Tolerance in hours for availability
+  # }
+  def schedule_courses(scheduling_orders: [])
     return nil if @students.empty? || @teachers.empty?
 
-    scheduling_orders ||= [{ student_type: nil, level: nil }]
-    until scheduling_orders.empty?
+    add_default_orders(scheduling_orders)
+    until scheduling_orders.empty? || all_students_processed?
       scheduling_order = scheduling_orders.shift
       process(scheduling_order)
     end
@@ -42,42 +60,40 @@ class Course_Scheduler
 
   private
 
-  # REFACTOR
+  def add_default_orders(scheduling_orders)
+    DEFAULT_TYPE_SCHEDULING_PRIORITIES.each do |type|
+      DEFAULT_LEVEL_SCHEDULING_PRIORITIES.each do |level|
+        default_order = {
+          student_type: type,
+          level: level
+        }
+        scheduling_orders << default_order
+      end
+    end
+  end
+
+  def all_students_processed?
+    @students.all? { |student| @processed[student.id] }
+  end
+
   def process(scheduling_order)
-    # ADD TO GRAPH. SOLVER NEEDS TO CONFIRM IS SOLVER
-    graph = build_graph()
-    feed_graph(scheduling_order: scheduling_order, graph: graph)
-    solution = solve(graph)
-    # ADD THESE TO INSTANCE VARIABLE
-    create_courses_from(solution)
+    return puts 'No type specified' if scheduling_order[:student_type].nil?
+    return puts 'No level specified' if scheduling_order[:level].nil?
+
+    students_to_process = select_students_by(scheduling_order)
+    assigner = Assigner.new(
+      students: students_to_process,
+      teachers: @teachers,
+      course_size: @course_size,
+      tolerance: scheduling_order[:tolerance]
+    )
   end
 
-  def build_graph
-    Graph.new.add_solver(Min_Cost_Max_Flow_Solver.new)
+  def select_students_by(scheduling_order)
+    @students.select do |student|
+      !@processed[student.id] && student.in_scheduling_order?(scheduling_order)
+    end
   end
-
-  def feed_graph(scheduling_order:, graph:)
-    graph_data = { nodes: {}, edges: {} }
-    ask_individuals_to_build_graph_data(scheduling_order, graph_data)
-  end
-
-  def ask_individuals_to_build_graph_data(scheduling_order)
-    # ask students for timetables
-    # load sink to teachers
-    # ask teachers to create edges and nodes for these timetables
-    # load source to students
-    # ask students to connect to course nodes and create its edges
-  end
-
-  def solve(graph)
-    postprocess(solution)
-  end
-
-  def postprocess(solution)
-  end
-
-
-
 
 
 

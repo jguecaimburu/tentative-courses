@@ -9,6 +9,9 @@ class Graph
     build_graph_from(edges)
   end
 
+  # Edge format:
+  # { from: A, to: B, data: DATA_OBJ }
+
   def add_edge(edge)
     raise TypeError unless edge[:from] && edge[:to]
 
@@ -32,11 +35,13 @@ class Graph
 
   def source_key=(source_key)
     return puts "#{source_key} not in graph." unless @graph[:from][source_key]
+
     @source_key = source_key
   end
 
   def sink_key=(sink_key)
     return puts "#{sink_key} not in graph." unless @graph[:from][sink_key]
+
     @sink_key = sink_key
   end
 

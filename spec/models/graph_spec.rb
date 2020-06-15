@@ -67,7 +67,7 @@ RSpec.describe Graph do
   end
 
   it 'returns truthy if solver added correctly' do
-    solver = Min_Cost_Max_Flow_Solver.new
+    solver = MinCostMaxFlowSolver.new
     expect(Graph.new.add_solver(solver)).to be_truthy
   end
 

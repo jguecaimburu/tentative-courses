@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
-class Min_Cost_Max_Flow_Solver
+# Graph edges required data:
+# { capacity: 0 < c < inf, cost > 0 }
+class MinCostMaxFlowSolver
   class ValueError < StandardError; end
 
   def initialize

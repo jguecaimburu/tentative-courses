@@ -3,9 +3,9 @@
 require 'rspec'
 require_relative '../../lib/models/min_cost_max_flow_solver'
 
-describe Min_Cost_Max_Flow_Solver do
+describe MinCostMaxFlowSolver do
   it 'affirms is a solver when asked' do
-    expect(Min_Cost_Max_Flow_Solver.new.solver?).to be true
+    expect(MinCostMaxFlowSolver.new.solver?).to be true
   end
 
   it 'solves max flow with min cost' do
@@ -37,7 +37,7 @@ describe Min_Cost_Max_Flow_Solver do
     }
     source_key = 1
     sink_key = 5
-    solution = Min_Cost_Max_Flow_Solver.new.solve(
+    solution = MinCostMaxFlowSolver.new.solve(
       graph: graph,
       source_key: source_key,
       sink_key: sink_key
@@ -75,7 +75,7 @@ describe Min_Cost_Max_Flow_Solver do
     }
     source_key = 1
     sink_key = 5
-    solution = Min_Cost_Max_Flow_Solver.new.solve(
+    solution = MinCostMaxFlowSolver.new.solve(
       graph: graph,
       source_key: source_key,
       sink_key: sink_key
@@ -99,9 +99,9 @@ describe Min_Cost_Max_Flow_Solver do
     }
     sok = 1
     sik = 3
-    solver = Min_Cost_Max_Flow_Solver.new
+    solver = MinCostMaxFlowSolver.new
     expect{ solver.solve(graph: graph, source_key: sok, sink_key: sik) }
-      .to raise_error(Min_Cost_Max_Flow_Solver::ValueError)
+      .to raise_error(MinCostMaxFlowSolver::ValueError)
   end
 
   it 'raises error on wrong source' do
@@ -119,9 +119,9 @@ describe Min_Cost_Max_Flow_Solver do
     }
     sok = 0
     sik = 2
-    solver = Min_Cost_Max_Flow_Solver.new
+    solver = MinCostMaxFlowSolver.new
     expect{ solver.solve(graph: graph, source_key: sok, sink_key: sik) }
-      .to raise_error(Min_Cost_Max_Flow_Solver::ValueError)
+      .to raise_error(MinCostMaxFlowSolver::ValueError)
   end
 
   it 'raises error on wrong edge structure' do
@@ -139,7 +139,7 @@ describe Min_Cost_Max_Flow_Solver do
     }
     sok = 1
     sik = 2
-    solver = Min_Cost_Max_Flow_Solver.new
+    solver = MinCostMaxFlowSolver.new
     expect{ solver.solve(graph: graph, source_key: sok, sink_key: sik) }
       .to raise_error(TypeError)
   end
@@ -159,9 +159,9 @@ describe Min_Cost_Max_Flow_Solver do
     }
     sok = 1
     sik = 2
-    solver = Min_Cost_Max_Flow_Solver.new
+    solver = MinCostMaxFlowSolver.new
     expect{ solver.solve(graph: graph, source_key: sok, sink_key: sik) }
-      .to raise_error(Min_Cost_Max_Flow_Solver::ValueError)
+      .to raise_error(MinCostMaxFlowSolver::ValueError)
   end
 
   it 'raises error on wrong cost' do
@@ -179,9 +179,9 @@ describe Min_Cost_Max_Flow_Solver do
     }
     sok = 1
     sik = 2
-    solver = Min_Cost_Max_Flow_Solver.new
+    solver = MinCostMaxFlowSolver.new
     expect{ solver.solve(graph: graph, source_key: sok, sink_key: sik) }
-      .to raise_error(Min_Cost_Max_Flow_Solver::ValueError)
+      .to raise_error(MinCostMaxFlowSolver::ValueError)
   end
 
   it 'returns false if no solution' do
@@ -207,7 +207,7 @@ describe Min_Cost_Max_Flow_Solver do
     }
     sok = 1
     sik = 4
-    solver = Min_Cost_Max_Flow_Solver.new
+    solver = MinCostMaxFlowSolver.new
     expect(solver.solve(graph: graph, source_key: sok, sink_key: sik))
       .to be false
   end
