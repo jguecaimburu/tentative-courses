@@ -11,24 +11,24 @@ RSpec.shared_context 'course scheduler' do
       id: 1,
       type: 'INDIVIDUAL',
       level: 'INTERMEDIATE',
-      availability: %w[MON-1800 MON-1700 TUE-1600 FRI-1400]
+      availability: %w[MON1800 MON1700 TUE1600 FRI1400]
     )
     @individual_student = Student.new(
       id: 2,
       type: 'INDIVIDUAL',
       level: 'INTERMEDIATE',
-      availability: %w[MON-1500 MON-1600 TUE-1600 WED-1400]
+      availability: %w[MON1500 MON1600 TUE1600 WED1400]
     )
     @group_student = Student.new(
       id: 3,
       type: 'GROUP',
       level: 'INTERMEDIATE',
-      availability: %w[MON-1500 MON-1600 TUE-1600 WED-1400]
+      availability: %w[MON1500 MON1600 TUE1600 WED1400]
     )
     @teacher = Teacher.new(
       id: 10,
-      availability: %w[MON-1500 MON-1600 TUE-1600 WED-1400],
-      levels: %w[INTERMEDIATE ADVANCED UPPER-INTERMEDIATE],
+      availability: %w[MON1500 MON1600 TUE1600 WED1400],
+      levels: %w[INTERMEDIATE ADVANCED UPPER_INTERMEDIATE],
       max_courses: 3
     )
   end

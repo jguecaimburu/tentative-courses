@@ -7,6 +7,15 @@ module Graphable
 
   private
 
+  def build_graph_data_holder
+    {
+      edges: [],
+      nodes: [],
+      source_key: 'SOURCE' + Time.now.to_i.to_s,
+      sink_key: 'SINK' + Time.now.to_i.to_s
+    }
+  end
+
   def add_own_edge_from_source(graph_data:, capacity:, cost:)
     add_edge(
       graph_data: graph_data,

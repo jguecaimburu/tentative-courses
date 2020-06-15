@@ -6,41 +6,55 @@ module Schedulable
   RANGE_STEP = 100
   MIN_HOUR = 800
   MAX_HOUR = 2000
-  SCHEDULE_FORMAT = /[A-Z]{3}-\d{4}/.freeze
+
+  # Schedule format: WEEKDAY HOUR without space
+  #   ex: ['MON1600', 'TUE1200']
+  #   Hours from 0800 to 2000
+  #   Weekdays: MON, TUE, WED, THU, FRI, SAT, SUN
+  SCHEDULE_FORMAT = /[A-Z]{3}\d{4}/.freeze
 
   def availability
     raise NoMethodError, "#{self} must implement availability"
   end
 
-  def available?(schedule)
-    raise ValueError unless schedule =~ SCHEDULE_FORMAT
+  def available?(schedule_code)
+    raise ValueError unless schedule_code =~ SCHEDULE_FORMAT
 
-    availability.include?(schedule)
+    availability.include?(schedule_code)
   end
 
   private
 
-  def valid?(schedule)
-    schedule =~ SCHEDULE_FORMAT
+  def valid?(schedule_code)
+    schedule_code =~ SCHEDULE_FORMAT
   end
 
   def valid_availability?(availability)
-    availability.all? { |schedule| valid?(schedule) }
+    availability.all? { |schedule_code| valid?(schedule_code) }
   end
 
-  def match_with_tolerance(schedule:, tolerance:)
-    availability_range = build_availability_range(schedule, tolerance)
+  def match_with_tolerance?(schedule_code:, tolerance:)
+    availability_range = build_availability_range(schedule_code, tolerance)
     match_availability_range?(availability_range)
   end
 
-  def build_availability_range(schedule, tolerance)
-    return [schedule] unless tolerance.positive?
+  def build_availability_range(schedule_code, tolerance)
+    return [schedule_code] unless tolerance.positive?
 
-    day = schedule[0..2]
-    hour = schedule[3..-1].to_i
-    max_hour = correct_schedule(hour + tolerance * RANGE_STEP)
-    min_hour = correct_schedule(hour - tolerance * RANGE_STEP)
-    (min_hour..max_hour).step(RANGE_STEP).map { |h| day + "%04d" % h }
+    availability_range(interpret_code(schedule_code), tolerance)
+  end
+
+  def availability_range(schedule, tolerance)
+    max_hr = correct_schedule(schedule[:hour] + tolerance * RANGE_STEP)
+    min_hr = correct_schedule(schedule[:hour] - tolerance * RANGE_STEP)
+    (min_hr..max_hr).step(RANGE_STEP).map { |h| schedule[:day] + "%04d" % h }
+  end
+
+  def interpret_code(schedule)
+    {
+      day: schedule[0..2],
+      hour: schedule[3..-1].to_i
+    }
   end
 
   def correct_schedule(hour)

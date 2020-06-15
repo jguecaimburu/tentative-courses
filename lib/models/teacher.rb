@@ -6,17 +6,16 @@ require_relative '../modules/graphable'
 class Teacher
   include Graphable
 
+  class ValueError < StandardError; end
+
   attr_reader :id, :availability
 
-  LEVELS = %w[BEGINNER PRE-INTERMEDIATE INTERMEDIATE
-              UPPER-INTERMEDIATE ADVANCED].freeze
-  SCHEDULE_FORMAT = /[A-Z]{3}-\d{4}/.freeze
+  LEVELS = %w[BEGINNER PRE_INTERMEDIATE INTERMEDIATE
+              UPPER_INTERMEDIATE ADVANCED].freeze
+  SCHEDULE_FORMAT = /[A-Z]{3}\d{4}/.freeze
 
-  # availability: array of strings representing weekday-hour
-  #   ex: ['MON-1600', 'TUE-1200']
-  #   Hours from 0800 to 2000
-  #   Weekdays: MON, TUE, WED, THU, FRI, SAT, SUN
-
+  # availability: array of strings representing weekday-hour in
+  # schedulable format
   def initialize(id:, availability:, levels:, max_courses:, priority: 5)
     raise ValueError unless levels.all? { |level| LEVELS.include?(level) }
     raise ValueError unless availability.all?{|sched| sched =~ SCHEDULE_FORMAT}
@@ -47,12 +46,16 @@ class Teacher
   end
 
   def build_graph_data(graph_data:, course_size:, student_requirements:)
-    build_own_edge_to_sink(
+    add_own_edge_to_sink(
       graph_data: graph_data,
       capacity: @max_courses * course_size,
       cost: @priority
     )
-    build_courses_data(graph_data, match_requirements(student_requirements))
+    add_courses_data(
+      graph_data: graph_data,
+      matched_requirements: match_requirements(student_requirements),
+      course_size: course_size
+    )
   end
 
   private
@@ -64,13 +67,13 @@ class Teacher
     }
   end
 
-  def build_courses_data(graph_data, matched_requirements)
+  def add_courses_data(graph_data:, matched_requirements:, course_size:)
     matched_requirements[:availability].each do |schedule|
-      matched_requirements[:level].each do |level|
+      matched_requirements[:levels].each do |level|
         add_link_node_with_edge_from_it(
           graph_data: graph_data,
           node: "#{@id}-#{level}-#{schedule}",
-          capacity: graph_data[:course_size],
+          capacity: course_size,
           cost: @priority
         )
       end

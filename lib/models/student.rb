@@ -12,13 +12,11 @@ class Student
   attr_reader :id, :availability, :level
 
   TYPES = %w[INDIVIDUAL GROUP].freeze
-  LEVELS = %w[BEGINNER PRE-INTERMEDIATE INTERMEDIATE
-              UPPER-INTERMEDIATE ADVANCED].freeze
+  LEVELS = %w[BEGINNER PRE_INTERMEDIATE INTERMEDIATE
+              UPPER_INTERMEDIATE ADVANCED].freeze
 
-  # availability: array of strings representing weekday-hour
-  #   ex: ['MON-1600', 'TUE-1200']
-  #   Hours from 0800 to 2000
-  #   Weekdays: MON, TUE, WED, THU, FRI, SAT, SUN
+  # availability: array of strings representing weekday-hour in
+  # schedulable format
 
   def initialize(id:, type:, availability:, level:, priority: 5)
     raise ValueError unless TYPES.include?(type) && LEVELS.include?(level)
@@ -68,7 +66,7 @@ class Student
     is_type && is_level
   end
 
-  def build_graph_data(graph_data:, course_size:, tolerance:)
+  def build_graph_data(graph_data:, course_size:, tolerance: 0)
     edge_data = {
       graph_data: graph_data,
       capacity: type?('GROUP') ? 1 : course_size,
@@ -84,8 +82,7 @@ class Student
   def match_node?(course_node)
     node_interpretation = interpret_node_id(course_node)
     match_with_tolerance?(
-      availability: @availability,
-      schedule: node_interpretation[:schedule],
+      schedule_code: node_interpretation[:schedule],
       tolerance: @tolerance
     ) && level?(node_interpretation[:level])
   end

@@ -2,8 +2,11 @@
 
 require_relative 'graph'
 require_relative 'min_cost_max_flow_solver'
+require_relative '../modules/graphable'
 
 class Assigner
+  include Graphable
+
   def initialize(students:, teachers:, course_size:, tolerance:)
     tolerance ||= 0
     raise TypeError unless tolerance&.to_i?
@@ -22,15 +25,6 @@ class Assigner
   end
 
   private
-
-  def build_graph_data_holder
-    {
-      edges: [],
-      nodes: [],
-      source_key: 'SOURCE' + Time.now.to_i.to_s,
-      sink_key: 'SINK' + Time.now.to_i.to_s
-    }
-  end
 
   def fill_courses_proposal
     graph = build_graph
@@ -85,6 +79,5 @@ class Assigner
   # mark students as processed
 
   def solve(graph)
-    flow_solution = graph.solve
   end
 end

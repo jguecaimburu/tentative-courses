@@ -9,9 +9,62 @@ RSpec.shared_context 'student' do
       id: 1,
       type: 'INDIVIDUAL',
       level: 'INTERMEDIATE',
-      availability: %w[MON-1500 MON-1600 TUE-1600 WED-1400]
+      availability: %w[MON1500 MON1700 TUE1600 FRI1400]
+    )
+    @individual_student = Student.new(
+      id: 2,
+      type: 'INDIVIDUAL',
+      level: 'INTERMEDIATE',
+      availability: %w[MON1500 MON1600 TUE1600 WED1400]
+    )
+    @group_student = Student.new(
+      id: 3,
+      type: 'GROUP',
+      level: 'INTERMEDIATE',
+      availability: %w[MON1500 MON1600 TUE1600 WED1400]
     )
   end
+
+  let(:graph_data_match) do
+    {
+      edges: [],
+      link_nodes: ['ID-INTERMEDIATE-MON1500'],
+      sink_key: 'SINK',
+      source_key: 'SOURCE'
+    }
+  end
+
+  let(:graph_data_two_matches) do
+    {
+      edges: [],
+      link_nodes: %w[ID-INTERMEDIATE-MON1500
+                     ID-INTERMEDIATE-TUE1600],
+      sink_key: 'SINK',
+      source_key: 'SOURCE'
+    }
+  end
+
+  let(:graph_data_tolerance) do
+    {
+      edges: [],
+      link_nodes: ['ID-INTERMEDIATE-FRI1500'],
+      sink_key: 'SINK',
+      source_key: 'SOURCE'
+    }
+  end
+
+  let(:graph_data_no_match) do
+    {
+      edges: [],
+      link_nodes: ['ID-BEGINNER-FRI1500'],
+      sink_key: 'SINK',
+      source_key: 'SOURCE'
+    }
+  end
+
+  let(:default_course_size) { 6 }
+
+  let(:tolerance) { 1 }
 end
 
 RSpec.describe Student do
@@ -32,8 +85,8 @@ RSpec.describe Student do
   end
 
   it 'answer correctly about availability' do
-    expect(@student.available?('MON-1500')).to be true
-    expect(@student.available?('TUE-1500')).to be false
+    expect(@student.available?('MON1500')).to be true
+    expect(@student.available?('TUE1500')).to be false
   end
 
   it 'raises ValueError if asked type is wrong' do
@@ -68,5 +121,80 @@ RSpec.describe Student do
     expect(@student.in_scheduling_order?(order_no_level)).to be true
     expect(@student.in_scheduling_order?(order_no_type)).to be true
     expect(@student.in_scheduling_order?(order_empty)).to be true
+  end
+
+  it 'adds source and edge to student' do
+    @student.build_graph_data(
+      graph_data: graph_data_match,
+      course_size: default_course_size
+    )
+    expect(graph_data_match[:edges].size).to eq(2)
+  end
+
+  it 'adds source and two edges to student' do
+    @student.build_graph_data(
+      graph_data: graph_data_two_matches,
+      course_size: default_course_size
+    )
+    expect(graph_data_two_matches[:edges].size).to eq(3)
+  end
+
+  it 'does not add any edge if no match' do
+    @student.build_graph_data(
+      graph_data: graph_data_tolerance,
+      course_size: default_course_size
+    )
+    expect(graph_data_tolerance[:edges].size).to eq(1)
+  end
+
+  it 'matches if no match but in tolerance' do
+    @student.build_graph_data(
+      graph_data: graph_data_tolerance,
+      course_size: default_course_size,
+      tolerance: tolerance
+    )
+    expect(graph_data_tolerance[:edges].size).to eq(2)
+  end
+
+  it 'does not match if level not available' do
+    @student.build_graph_data(
+      graph_data: graph_data_no_match,
+      course_size: default_course_size,
+      tolerance: tolerance
+    )
+    expect(graph_data_no_match[:edges].size).to eq(1)
+  end
+
+  it 'accumulates edges from different students' do
+    @student.build_graph_data(
+      graph_data: graph_data_match,
+      course_size: default_course_size,
+      tolerance: tolerance
+    )
+    @individual_student.build_graph_data(
+      graph_data: graph_data_match,
+      course_size: default_course_size,
+      tolerance: tolerance
+    )
+    expect(graph_data_match[:edges].size).to eq(4)
+  end
+
+  it 'capacity of groupal for edge is 1' do
+    @group_student.build_graph_data(
+      graph_data: graph_data_match,
+      course_size: default_course_size,
+      tolerance: tolerance
+    )
+    expect(graph_data_match[:edges][0][:data][:capacity]).to eq(1)
+  end
+
+  it 'capacity of individual for edge is course_size' do
+    @individual_student.build_graph_data(
+      graph_data: graph_data_match,
+      course_size: default_course_size,
+      tolerance: tolerance
+    )
+    expect(graph_data_match[:edges][0][:data][:capacity])
+      .to eq(default_course_size)
   end
 end
