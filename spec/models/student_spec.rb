@@ -2,29 +2,9 @@
 
 require 'rspec'
 require_relative '../../lib/models/student'
+require_relative 'shared_context'
 
 RSpec.shared_context 'student' do
-  before do
-    @student = Student.new(
-      id: 1,
-      type: 'INDIVIDUAL',
-      level: 'INTERMEDIATE',
-      availability: %w[MON1500 MON1700 TUE1600 FRI1400]
-    )
-    @individual_student = Student.new(
-      id: 2,
-      type: 'INDIVIDUAL',
-      level: 'INTERMEDIATE',
-      availability: %w[MON1500 MON1600 TUE1600 WED1400]
-    )
-    @group_student = Student.new(
-      id: 3,
-      type: 'GROUP',
-      level: 'INTERMEDIATE',
-      availability: %w[MON1500 MON1600 TUE1600 WED1400]
-    )
-  end
-
   let(:graph_data_match) do
     {
       edges: [],
@@ -69,6 +49,7 @@ end
 
 RSpec.describe Student do
   include_context 'student'
+  include_context 'student instances'
 
   it 'affirm is a student when asked' do
     expect(@student.student?).to be true

@@ -3,31 +3,9 @@
 require 'rspec'
 require 'set'
 require_relative '../../lib/models/teacher'
+require_relative 'shared_context'
 
 RSpec.shared_context 'teacher' do
-  before do
-    @teacher = Teacher.new(
-      id: 10,
-      availability: %w[MON1500 MON1600 TUE1600 WED1400],
-      levels: %w[INTERMEDIATE ADVANCED UPPER_INTERMEDIATE],
-      max_courses: 3
-    )
-
-    @other_teacher = Teacher.new(
-      id: 11,
-      availability: %w[MON1500 MON1600 TUE1600 WED1400],
-      levels: %w[INTERMEDIATE ADVANCED UPPER_INTERMEDIATE],
-      max_courses: 3
-    )
-
-    @beginner_teacher = Teacher.new(
-      id: 12,
-      availability: %w[MON1500 MON1600 TUE1600 WED1400],
-      levels: ['BEGINNER'],
-      max_courses: 3
-    )
-  end
-
   let(:graph_data) do
     {
       edges: [],
@@ -63,6 +41,7 @@ end
 
 RSpec.describe Teacher do
   include_context 'teacher'
+  include_context 'teacher instances'
 
   it 'affirm is a teacher when asked' do
     expect(@teacher.teacher?).to be true

@@ -9,7 +9,7 @@ class Student
 
   class ValueError < StandardError; end
 
-  attr_reader :id, :availability, :level
+  attr_reader :id, :availability, :level, :type
 
   TYPES = %w[INDIVIDUAL GROUP].freeze
   LEVELS = %w[BEGINNER PRE_INTERMEDIATE INTERMEDIATE

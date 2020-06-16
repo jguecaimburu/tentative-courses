@@ -2,9 +2,11 @@
 
 require 'set'
 require_relative '../modules/graphable'
+require_relative '../modules/schedulable'
 
 class Teacher
   include Graphable
+  include Schedulable
 
   class ValueError < StandardError; end
 
@@ -12,13 +14,12 @@ class Teacher
 
   LEVELS = %w[BEGINNER PRE_INTERMEDIATE INTERMEDIATE
               UPPER_INTERMEDIATE ADVANCED].freeze
-  SCHEDULE_FORMAT = /[A-Z]{3}\d{4}/.freeze
 
   # availability: array of strings representing weekday-hour in
   # schedulable format
   def initialize(id:, availability:, levels:, max_courses:, priority: 5)
     raise ValueError unless levels.all? { |level| LEVELS.include?(level) }
-    raise ValueError unless availability.all?{|sched| sched =~ SCHEDULE_FORMAT}
+    raise ValueError unless valid_availability?(availability)
     raise TypeError unless max_courses.is_a? Integer
     raise TypeError unless priority.is_a? Integer
 
@@ -43,6 +44,12 @@ class Teacher
 
   def teacher?
     true
+  end
+
+  def level?(level)
+    raise ValueError unless LEVELS.include?(level)
+
+    @levels.include?(level)
   end
 
   def build_graph_data(graph_data:, course_size:, student_requirements:)

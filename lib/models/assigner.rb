@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'graph'
+require_relative 'course'
 require_relative 'min_cost_max_flow_solver'
 require_relative '../modules/graphable'
 
@@ -76,8 +77,11 @@ class Assigner
       )
     end
   end
-  # mark students as processed
+  # mark students as processed in scheduler loop and correct if postprocess
 
   def solve(graph)
+  end
+
+  def create_courses_from(solution)
   end
 end

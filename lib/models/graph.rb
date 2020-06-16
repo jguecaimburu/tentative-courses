@@ -16,9 +16,9 @@ class Graph
     raise TypeError unless edge[:from] && edge[:to]
 
     try_to_add_edge(edge)
-    rescue TypeError
-      puts edge
-      raise TypeError, 'Element is not an edge'
+  rescue TypeError
+    puts edge
+    raise TypeError, 'Element is not an edge'
   end
 
   def bulk_add_edges(edges)
@@ -55,6 +55,7 @@ class Graph
   end
 
   private
+
   def build_graph_from(edges)
     @graph = { from: {} }
     bulk_add_edges(edges)
