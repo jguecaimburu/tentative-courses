@@ -21,6 +21,13 @@ class Student
     CONFIRMED: 3
   }.freeze
 
+  PRINTABLE_STATUS = {
+    0 => 'Not Assigned',
+    1 => 'Assigned with tolerance',
+    2 => 'Assigned',
+    3 => 'Confirmed'
+  }.freeze
+
   # id: Can't use hyphens (-)
   # availability: array of strings representing weekday-hour in
   # schedulable format
@@ -39,7 +46,8 @@ class Student
   end
 
   def to_s
-    puts "Student #{@id}. Type: #{@type}. Level: #{@level}"
+    "Student #{@id}. Type: #{@type}. Level: #{@level}. \
+Status: #{PRINTABLE_STATUS[@course_group[:status]]}."
   end
 
   def student?

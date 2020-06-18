@@ -15,7 +15,7 @@ class CourseFactory
   def manufacture_from(assign_orders)
     interpreted_orders = interpret_orders(assign_orders)
     manufacture_full_courses(interpreted_orders)
-    postprocess_remaining_courses(interpreted_orders)
+    postprocess_remaining_orders(interpreted_orders)
     reset_scrap_students
   end
 
@@ -35,24 +35,21 @@ class CourseFactory
     initial_courses_ids.each do |id|
       next unless interpreted_orders[id][:remaining_places].zero?
 
-      course = manufacture_course(interpreted_orders[id][:details])
+      manufacture_course(interpreted_orders[id][:details])
       interpreted_orders.delete(id)
-      next unless course
-
-      @courses_container << course
     end
   end
 
   def manufacture_course(details)
     course = Course.new(details)
     @scrap_students += course.rejected_students
-    course
-  rescue ValueError
+    @courses_container << course
+  rescue Course::ValueError
     @scrap_students += details[:students]
     false
   end
 
-  def postprocess_remaining_courses(interpreted_orders)
+  def postprocess_remaining_orders(interpreted_orders)
     initial_courses_ids = interpreted_orders.keys
     initial_courses_ids.each do |id|
       order = interpreted_orders[id]

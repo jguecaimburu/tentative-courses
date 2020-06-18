@@ -80,4 +80,17 @@ RSpec.describe CourseGroup do
     students.each { |student| @empty_group.add_student(student) }
     expect(@empty_group.confirmed?).to be false
   end
+
+  it 'change student assigned status on success' do
+    expect(@group_student.assigned?).to be false
+    @empty_group.add_student(@group_student)
+    expect(@group_student.assigned?).to be true
+  end
+
+  it 'does not change assigned status on rejected student' do
+    expect(@student.assigned?).to be false
+    students = [@individual_student, @student]
+    students.each { |student| @empty_group.add_student(student) }
+    expect(@student.assigned?).to be false
+  end
 end

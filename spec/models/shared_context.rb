@@ -97,7 +97,7 @@ RSpec.shared_context 'teacher instances' do
     )
     @single_course_teacher = Teacher.new(
       id: 'TC6.INT',
-      availability: %w[TUE1500 TUE1600],
+      availability: %w[MON1500 MON1600],
       levels: ['INTERMEDIATE'],
       max_courses: 1
     )

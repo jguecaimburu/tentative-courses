@@ -16,6 +16,10 @@ class CourseGroup
     @students = {}
   end
 
+  def to_s
+    @students.map { |_, student| student[:student].to_s }
+  end
+
   def add_student(student)
     student.student?
     return puts 'Course is full' if full?
@@ -76,11 +80,11 @@ class CourseGroup
     return nil if student.assigned?
     return nil unless @students[student.id].nil?
 
+    assign_student(student)
     @students[student.id] = {
       student: student,
       status: match_schedule_status(student)
     }
-    assign_student(student)
   end
 
   def match_schedule_status(schedulable)

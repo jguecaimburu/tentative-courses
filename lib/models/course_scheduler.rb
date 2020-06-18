@@ -11,7 +11,7 @@ class CourseScheduler
   def initialize
     @students = {}
     @teachers = {}
-    @scheduled_courses = {}
+    @scheduled_courses = []
   end
 
   def bulk_add_students(students)
@@ -52,17 +52,12 @@ class CourseScheduler
   #   tolerance (optional): Tolerance in hours for availability
   # }
 
-  # DEBUGGING #########################
-
   def schedule_courses(scheduling_orders: [])
     return nil if @students.empty? || @teachers.empty?
 
-    count = 0
-
     add_default_orders(scheduling_orders)
-    until all_students_processed? || count == 10
+    until all_students_processed?
       process(scheduling_orders.shift)
-      count += 1
       next unless scheduling_orders.empty?
 
       add_default_orders(scheduling_orders) unless all_students_processed?
@@ -85,14 +80,7 @@ class CourseScheduler
     @students.all? { |_, student| student[:processed] }
   end
 
-  # DEBUGGING #########################
-
   def process(scheduling_order)
-    puts 'process scheduling orders'
-    puts scheduling_order
-    puts @students
-    puts @scheduled_courses
-
     processor = SchedulingOrderProcessor.new(scheduling_order)
     processor.process(
       students: @students,

@@ -20,6 +20,18 @@ class Course
     build_from(details)
   end
 
+  def to_s
+    str = <<DESC
+    ID: #{@id}
+    SCHEDULE: #{@schedule}
+    LEVEL: #{@level}
+    TEACHER: #{@teacher[:teacher]}
+    STUDENTS:
+    #{@group.to_s}
+DESC
+    str
+  end
+
   def confirmed?
     @teacher[:status] == STATUS[:CONFIRMED] && @group.confirmed?
   end
@@ -41,10 +53,10 @@ class Course
   private
 
   def build_from(details)
-    @teacher = add_teacher(details)
     @id = details[:id]
     @level = details[:level]
     @schedule = details[:schedule]
+    add_teacher(details)
     @group = CourseGroup.new(course: self)
     @status = STATUS[:NOT_CONFIRMED]
 

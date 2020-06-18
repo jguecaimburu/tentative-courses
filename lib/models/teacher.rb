@@ -35,7 +35,7 @@ class Teacher
   end
 
   def to_s
-    puts "Teacher #{@id}."
+    "Teacher #{@id}."
   end
 
   def teacher?
