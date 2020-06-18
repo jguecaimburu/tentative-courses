@@ -48,7 +48,9 @@ class Assigner
     requirements = { levels: Set.new, availability: Set.new }
     @students.each_with_object(requirements) do |std_element, req|
       req[:levels] << std_element[1][:student].level
-      req[:availability].merge(std_element[1][:student].availability)
+      req[:availability].merge(
+        std_element[1][:student].availability_with_tolerance(@tolerance)
+      )
     end
   end
 

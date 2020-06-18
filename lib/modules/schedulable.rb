@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'set'
+
 module Schedulable
   class ValueError < StandardError; end
 
@@ -16,6 +18,15 @@ module Schedulable
 
   def availability
     raise NoMethodError, "#{self} must implement availability"
+  end
+
+  def availability_with_tolerance(tolerance)
+    return availability if tolerance.zero?
+
+    availability.each_with_object(Set.new) do |schedule, extended_availability|
+      schedule_range = build_schedule_range(schedule, tolerance)
+      extended_availability.merge(schedule_range)
+    end
   end
 
   def available?(schedule_code)
@@ -35,17 +46,17 @@ module Schedulable
   end
 
   def match_with_tolerance?(schedule_code:, tolerance:)
-    availability_range = build_availability_range(schedule_code, tolerance)
-    match_availability_range?(availability_range)
+    schedule_range = build_schedule_range(schedule_code, tolerance)
+    match_schedule_range?(schedule_range)
   end
 
-  def build_availability_range(schedule_code, tolerance)
+  def build_schedule_range(schedule_code, tolerance)
     return [schedule_code] unless tolerance.positive?
 
-    availability_range(interpret_code(schedule_code), tolerance)
+    schedule_range(interpret_code(schedule_code), tolerance)
   end
 
-  def availability_range(schedule, tolerance)
+  def schedule_range(schedule, tolerance)
     max_hr = correct_schedule(schedule[:hour] + tolerance * RANGE_STEP)
     min_hr = correct_schedule(schedule[:hour] - tolerance * RANGE_STEP)
     (min_hr..max_hr).step(RANGE_STEP).map { |h| schedule[:day] + "%04d" % h }
@@ -68,7 +79,7 @@ module Schedulable
     end
   end
 
-  def match_availability_range?(availability_range)
+  def match_schedule_range?(availability_range)
     availability_range.any? { |schedule| availability.include?(schedule) }
   end
 end

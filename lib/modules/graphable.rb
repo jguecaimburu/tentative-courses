@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Graphable
-  HIGH_COST_MULTIPLE = 100
+  HIGH_COST = 1_000_000
   HIGH_COST_CAPACITY = 1_000_000
 
   # id implementation can't use hyphens (-)
@@ -55,6 +55,7 @@ module Graphable
 
   def add_edges_to_link_nodes(graph_data:, capacity:, cost:)
     graph_data[:link_nodes].each do |node|
+
       next unless match_node?(node)
 
       add_edge(
@@ -88,7 +89,7 @@ module Graphable
       from: id.to_s,
       to: graph_data[:high_cost_link],
       capacity: capacity,
-      cost: cost * HIGH_COST_MULTIPLE
+      cost: HIGH_COST
     )
   end
 
@@ -98,7 +99,7 @@ module Graphable
       from: graph_data[:high_cost_link],
       to: graph_data[:sink_key],
       capacity: HIGH_COST_CAPACITY,
-      cost: HIGH_COST_MULTIPLE
+      cost: HIGH_COST
     )
   end
 end

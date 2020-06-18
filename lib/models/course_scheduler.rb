@@ -50,6 +50,7 @@ class CourseScheduler
   #   student_type: 'INDIVIDUAL' or 'GROUP',
   #   level: valid student level
   #   tolerance (optional): Tolerance in hours for availability
+  #   course_size (optional): Max number of students for groups
   # }
 
   def schedule_courses(scheduling_orders: [])
@@ -63,6 +64,13 @@ class CourseScheduler
       add_default_orders(scheduling_orders) unless all_students_processed?
     end
     @scheduled_courses
+  end
+
+  def unassigned_students
+    @students.each_with_object([]) do |(_, student_element), unassigned|
+      student = student_element[:student]
+      unassigned << student unless student.assigned?
+    end
   end
 
   private
