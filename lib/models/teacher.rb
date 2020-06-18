@@ -48,18 +48,20 @@ class Teacher
     @levels.include?(level)
   end
 
-  def build_graph_data(graph_data:, course_size:, students_requirements:)
-    add_own_edge_to_sink(
+  def build_graph_data_if_available(
+    graph_data:,
+    course_size:,
+    students_requirements:
+  )
+    return false if full_assigned?
+
+    build_graph_data(
       graph_data: graph_data,
-      capacity: @max_courses * course_size,
-      cost: @priority
-    )
-    add_courses_data(
-      graph_data: graph_data,
-      matched_requirements: match_requirements(students_requirements),
-      course_size: course_size
+      course_size: course_size,
+      students_requirements: students_requirements
     )
   end
+
 
   def assign_course(course)
     return false if full_assigned?
@@ -82,6 +84,19 @@ class Teacher
     @courses = {}
     @assigned_schedules = []
     @confirmed_schedules = []
+  end
+
+  def build_graph_data(graph_data:, course_size:, students_requirements:)
+    add_own_edge_to_sink(
+      graph_data: graph_data,
+      capacity: @max_courses * course_size,
+      cost: @priority
+    )
+    add_courses_data(
+      graph_data: graph_data,
+      matched_requirements: match_requirements(students_requirements),
+      course_size: course_size
+    )
   end
 
   def match_requirements(students_requirements)

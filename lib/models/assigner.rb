@@ -56,7 +56,7 @@ class Assigner
 
   def ask_teachers_data(students_requirements)
     @teachers.each do |_, teacher_element|
-      teacher_element[:teacher].build_graph_data(
+      teacher_element[:teacher].build_graph_data_if_available(
         graph_data: @graph_data,
         course_size: @course_size,
         students_requirements: students_requirements

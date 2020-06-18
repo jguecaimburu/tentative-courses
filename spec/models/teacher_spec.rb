@@ -48,7 +48,7 @@ RSpec.describe Teacher do
   end
 
   it 'create edge to source and one and edge for each match' do
-    @teacher.build_graph_data(
+    @teacher.build_graph_data_if_available(
       graph_data: graph_data,
       students_requirements: students_requirements_match,
       course_size: default_course_size
@@ -58,12 +58,12 @@ RSpec.describe Teacher do
   end
 
   it 'accumulates edges and nodes for different teachers' do
-    @teacher.build_graph_data(
+    @teacher.build_graph_data_if_available(
       graph_data: graph_data,
       students_requirements: students_requirements_match,
       course_size: default_course_size
     )
-    @other_teacher.build_graph_data(
+    @other_teacher.build_graph_data_if_available(
       graph_data: graph_data,
       students_requirements: students_requirements_match,
       course_size: default_course_size
@@ -73,7 +73,7 @@ RSpec.describe Teacher do
   end
 
   it 'does not create nodes or edges for courses if no schedule match' do
-    @teacher.build_graph_data(
+    @teacher.build_graph_data_if_available(
       graph_data: graph_data,
       students_requirements: students_requirements_no_match,
       course_size: default_course_size
@@ -83,7 +83,7 @@ RSpec.describe Teacher do
   end
 
   it 'does not create nodes or edges for courses if no level match' do
-    @beginner_teacher.build_graph_data(
+    @beginner_teacher.build_graph_data_if_available(
       graph_data: graph_data,
       students_requirements: students_requirements_match,
       course_size: default_course_size
@@ -93,7 +93,7 @@ RSpec.describe Teacher do
   end
 
   it 'does not create nodes or edges for courses on empty requirements' do
-    @teacher.build_graph_data(
+    @teacher.build_graph_data_if_available(
       graph_data: graph_data,
       students_requirements: students_requirements_empty,
       course_size: default_course_size
@@ -103,7 +103,7 @@ RSpec.describe Teacher do
   end
 
   it 'sets edges capacities correctly' do
-    @teacher.build_graph_data(
+    @teacher.build_graph_data_if_available(
       graph_data: graph_data,
       students_requirements: students_requirements_match,
       course_size: default_course_size
