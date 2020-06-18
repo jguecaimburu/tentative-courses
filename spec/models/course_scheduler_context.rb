@@ -166,4 +166,69 @@ RSpec.shared_context 'course scheduler' do
 
   let(:options_student) { [@student_options] }
   let(:options_teachers) { [@teacher_options_best, @teacher_options_worst] }
+
+  let(:data_for_random) do
+    available_hours = (800..2000).step(100).map { |h| "%04d" % h }
+    available_days = %w[MON TUE WED THU FRI]
+    available_schedules = []
+    available_days.each do |day|
+      available_hours.each do |hour|
+        available_schedules << (day + hour)
+      end
+    end
+    {
+      types: %w[INDIVIDUAL GROUP],
+      levels: %w[BEGINNER PRE_INTERMEDIATE INTERMEDIATE
+                 UPPER_INTERMEDIATE ADVANCED],
+      schedules: available_schedules
+    }
+  end
+
+  let(:two_hundred_random_students) do
+    (1..200).each_with_object([]) do |_, students|
+      student = Student.new(
+        id: 'ST' + rand(900_000_000...1_000_000_000).to_s,
+        level: data_for_random[:levels].sample,
+        type: data_for_random[:types].sample,
+        availability: data_for_random[:schedules].sample(rand(1..10))
+      )
+      students << student
+    end
+  end
+
+  let(:fifty_random_teachers) do
+    (1..50).each_with_object([]) do |_, teachers|
+      teacher = Teacher.new(
+        id: 'TC' + rand(900_000_000...1_000_000_000).to_s,
+        levels: data_for_random[:levels].sample(rand(1..5)),
+        max_courses: rand(1..5),
+        availability: data_for_random[:schedules].sample(rand(1..10))
+      )
+      teachers << teacher
+    end
+  end
+
+  let(:forty_random_students) do
+    (1..40).each_with_object([]) do |_, students|
+      student = Student.new(
+        id: 'ST' + rand(900_000_000...1_000_000_000).to_s,
+        level: data_for_random[:levels].sample,
+        type: data_for_random[:types].sample,
+        availability: data_for_random[:schedules].sample(rand(1..10))
+      )
+      students << student
+    end
+  end
+
+  let(:ten_random_teachers) do
+    (1..50).each_with_object([]) do |_, teachers|
+      teacher = Teacher.new(
+        id: 'TC' + rand(900_000_000...1_000_000_000).to_s,
+        levels: data_for_random[:levels].sample(rand(1..5)),
+        max_courses: rand(1..5),
+        availability: data_for_random[:schedules].sample(rand(1..10))
+      )
+      teachers << teacher
+    end
+  end
 end

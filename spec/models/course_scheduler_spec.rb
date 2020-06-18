@@ -87,4 +87,35 @@ RSpec.describe CourseScheduler do
     expect(courses.empty?).to be false
     expect(@student_late.assigned?).to be true
   end
+
+  it 'handles 40 students and 10 teachers' do
+    start = Time.now
+    course_scheduler = CourseScheduler.new
+    course_scheduler.bulk_add_students(forty_random_students)
+    course_scheduler.bulk_add_teachers(ten_random_teachers)
+    course_scheduler.schedule_courses
+    unassigned = course_scheduler.unassigned_students
+    execution_time = Time.now - start
+    puts '40/10'
+    print 'Unassigned: '
+    puts unassigned.size
+    print 'Execution time: '
+    puts execution_time
+  end
+
+  it 'handles 200 students and 50 teachers' do
+    start = Time.now
+    course_scheduler = CourseScheduler.new
+    course_scheduler.bulk_add_students(two_hundred_random_students)
+    course_scheduler.bulk_add_teachers(fifty_random_teachers)
+    courses = course_scheduler.schedule_courses
+    unassigned = course_scheduler.unassigned_students
+    execution_time = Time.now - start
+    puts courses
+    puts '200/50'
+    print 'Unassigned: '
+    puts unassigned.size
+    print 'Execution time: '
+    puts execution_time
+  end
 end

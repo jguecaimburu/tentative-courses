@@ -8,6 +8,8 @@ class CourseScheduler
                                            PRE_INTERMEDIATE ADVANCED
                                            BEGINNER].freeze
 
+  MAX_LOOP = 10
+
   def initialize
     @students = {}
     @teachers = {}
@@ -56,12 +58,14 @@ class CourseScheduler
   def schedule_courses(scheduling_orders: [])
     return nil if @students.empty? || @teachers.empty?
 
+    loop_count = 0
     add_default_orders(scheduling_orders)
-    until all_students_processed?
+    until all_students_processed? || loop_count == MAX_LOOP
       process(scheduling_orders.shift)
       next unless scheduling_orders.empty?
 
       add_default_orders(scheduling_orders) unless all_students_processed?
+      loop_count += 1
     end
     @scheduled_courses
   end
