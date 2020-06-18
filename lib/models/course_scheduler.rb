@@ -59,12 +59,8 @@ class CourseScheduler
     return nil if @students.empty? || @teachers.empty?
 
     loop_count = 0
-    add_default_orders(scheduling_orders)
     until all_students_processed? || loop_count == MAX_LOOP
-      process(scheduling_orders.shift)
-      next unless scheduling_orders.empty?
-
-      add_default_orders(scheduling_orders) unless all_students_processed?
+      loop_scheduling_orders(scheduling_orders)
       loop_count += 1
     end
     @scheduled_courses
@@ -79,6 +75,10 @@ class CourseScheduler
 
   private
 
+  def all_students_processed?
+    @students.all? { |_, student| student[:processed] }
+  end
+
   # Always process remaining unprocessed students in this order
   def add_default_orders(scheduling_orders)
     DEFAULT_TYPE_SCHEDULING_PRIORITIES.each do |type|
@@ -88,8 +88,11 @@ class CourseScheduler
     end
   end
 
-  def all_students_processed?
-    @students.all? { |_, student| student[:processed] }
+  def loop_scheduling_orders(scheduling_orders)
+    add_default_orders(scheduling_orders) if scheduling_orders.empty?
+    until all_students_processed? || scheduling_orders.empty?
+      process(scheduling_orders.shift)
+    end
   end
 
   def process(scheduling_order)
