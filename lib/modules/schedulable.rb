@@ -7,7 +7,8 @@ module Schedulable
   MIN_HOUR = 800
   MAX_HOUR = 2000
 
-  # Schedule format: WEEKDAY HOUR without space
+  # Schedule format: WEEKDAY HOUR without space or hyphens (-)
+  #   Hyphens are incompatible with graphs
   #   ex: ['MON1600', 'TUE1200']
   #   Hours from 0800 to 2000
   #   Weekdays: MON, TUE, WED, THU, FRI, SAT, SUN

@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 module Graphable
+  HIGH_COST_MULTIPLE = 100
+  HIGH_COST_CAPACITY = 1_000_000
+
+  # id implementation can't use hyphens (-)
   def id
     raise NoMethodError, "#{self} should implement id"
   end
@@ -10,9 +14,10 @@ module Graphable
   def build_graph_data_holder
     {
       edges: [],
-      nodes: [],
+      link_nodes: [],
       source_key: 'SOURCE' + Time.now.to_i.to_s,
-      sink_key: 'SINK' + Time.now.to_i.to_s
+      sink_key: 'SINK' + Time.now.to_i.to_s,
+      high_cost_link: 'HCLINK' + Time.now.to_i.to_s
     }
   end
 
@@ -75,5 +80,25 @@ module Graphable
 
   def match_node?(_)
     raise NoMethodError, "#{self} should implement match_node"
+  end
+
+  def add_own_edge_to_hight_cost_link(graph_data:, capacity:, cost:)
+    add_edge(
+      graph_data: graph_data,
+      from: id.to_s,
+      to: graph_data[:high_cost_link],
+      capacity: capacity,
+      cost: cost * HIGH_COST_MULTIPLE
+    )
+  end
+
+  def add_edge_from_hight_cost_link_to_sink(graph_data:)
+    add_edge(
+      graph_data: graph_data,
+      from: graph_data[:high_cost_link],
+      to: graph_data[:sink_key],
+      capacity: HIGH_COST_CAPACITY,
+      cost: HIGH_COST_MULTIPLE
+    )
   end
 end

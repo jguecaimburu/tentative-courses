@@ -17,21 +17,21 @@ RSpec.shared_context 'teacher' do
 
   let(:default_course_size) { 6 }
 
-  let(:student_requirements_match) do
+  let(:students_requirements_match) do
     {
       levels: Set.new(['INTERMEDIATE']),
       availability: Set.new(%w[MON1500 MON1600 TUE1600 WED1400])
     }
   end
 
-  let(:student_requirements_no_match) do
+  let(:students_requirements_no_match) do
     {
       levels: Set.new(['INTERMEDIATE']),
       availability: Set.new(%w[MON1000 MON1700 TUE1300 WED1100])
     }
   end
 
-  let(:student_requirements_empty) do
+  let(:students_requirements_empty) do
     {
       levels: Set.new(['INTERMEDIATE']),
       availability: Set.new([])
@@ -50,7 +50,7 @@ RSpec.describe Teacher do
   it 'create edge to source and one and edge for each match' do
     @teacher.build_graph_data(
       graph_data: graph_data,
-      student_requirements: student_requirements_match,
+      students_requirements: students_requirements_match,
       course_size: default_course_size
     )
     expect(graph_data[:edges].size).to eq(5)
@@ -60,12 +60,12 @@ RSpec.describe Teacher do
   it 'accumulates edges and nodes for different teachers' do
     @teacher.build_graph_data(
       graph_data: graph_data,
-      student_requirements: student_requirements_match,
+      students_requirements: students_requirements_match,
       course_size: default_course_size
     )
     @other_teacher.build_graph_data(
       graph_data: graph_data,
-      student_requirements: student_requirements_match,
+      students_requirements: students_requirements_match,
       course_size: default_course_size
     )
     expect(graph_data[:edges].size).to eq(10)
@@ -75,7 +75,7 @@ RSpec.describe Teacher do
   it 'does not create nodes or edges for courses if no schedule match' do
     @teacher.build_graph_data(
       graph_data: graph_data,
-      student_requirements: student_requirements_no_match,
+      students_requirements: students_requirements_no_match,
       course_size: default_course_size
     )
     expect(graph_data[:edges].size).to eq(1)
@@ -85,7 +85,7 @@ RSpec.describe Teacher do
   it 'does not create nodes or edges for courses if no level match' do
     @beginner_teacher.build_graph_data(
       graph_data: graph_data,
-      student_requirements: student_requirements_match,
+      students_requirements: students_requirements_match,
       course_size: default_course_size
     )
     expect(graph_data[:edges].size).to eq(1)
@@ -95,7 +95,7 @@ RSpec.describe Teacher do
   it 'does not create nodes or edges for courses on empty requirements' do
     @teacher.build_graph_data(
       graph_data: graph_data,
-      student_requirements: student_requirements_empty,
+      students_requirements: students_requirements_empty,
       course_size: default_course_size
     )
     expect(graph_data[:edges].size).to eq(1)
@@ -105,7 +105,7 @@ RSpec.describe Teacher do
   it 'sets edges capacities correctly' do
     @teacher.build_graph_data(
       graph_data: graph_data,
-      student_requirements: student_requirements_match,
+      students_requirements: students_requirements_match,
       course_size: default_course_size
     )
     expect(graph_data[:edges][0][:data][:capacity]).to eq(18)

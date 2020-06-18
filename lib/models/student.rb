@@ -14,7 +14,14 @@ class Student
   TYPES = %w[INDIVIDUAL GROUP].freeze
   LEVELS = %w[BEGINNER PRE_INTERMEDIATE INTERMEDIATE
               UPPER_INTERMEDIATE ADVANCED].freeze
+  STATUS = {
+    NOT_ASSIGNED: 0,
+    ASSIGNED_WITH_TOLERANCE: 1,
+    ASSIGNED: 2,
+    CONFIRMED: 3
+  }.freeze
 
+  # id: Can't use hyphens (-)
   # availability: array of strings representing weekday-hour in
   # schedulable format
 
@@ -28,18 +35,11 @@ class Student
     @availability = availability
     @level = level
     @priority = priority
+    setup
   end
 
   def to_s
     puts "Student #{@id}. Type: #{@type}. Level: #{@level}"
-  end
-
-  def eql?(other)
-    @id == other.id
-  end
-
-  def hash
-    @id.hash
   end
 
   def student?
@@ -74,10 +74,26 @@ class Student
     }
     @tolerance = tolerance
     add_own_edge_from_source(edge_data)
+    add_own_edge_to_hight_cost_link(edge_data)
     add_edges_to_link_nodes(edge_data)
   end
 
+  def assigned?
+    @course_group[:status] != STATUS[:NOT_ASSIGNED]
+  end
+
+  def assign_course_group(course_group)
+    return false if assigned?
+
+    @course_group[:group] = course_group
+    change_status_to_assigned
+  end
+
   private
+
+  def setup
+    @course_group = { status: STATUS[:NOT_ASSIGNED], group: nil }
+  end
 
   def match_node?(course_node)
     node_interpretation = interpret_node_id(course_node)
@@ -92,5 +108,12 @@ class Student
       schedule: course_node.split('-')[2],
       level: course_node.split('-')[1]
     }
+  end
+
+  def change_status_to_assigned
+    @course_group[:status] = STATUS[:ASSIGNED]
+    return nil if available?(@course_group[:group].course_details[:schedule])
+
+    @course_group[:status] = STATUS[:ASSIGNED_WITH_TOLERANCE]
   end
 end

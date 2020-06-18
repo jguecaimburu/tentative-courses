@@ -10,25 +10,24 @@ class CourseGroup
 
   attr_reader :type, :max_size
 
-  def initialize(course:, students: [])
+  def initialize(course:)
     @course = course
     @max_size = DEFAULT_SIZE
     @students = {}
-    students.respond_to?(:each) ? add_students(students) : nil
   end
 
-  def add_students(students)
-    return nil if students.nil?
+  def add_student(student)
+    student.student?
     return puts 'Course is full' if full?
 
-    students.each do |student|
-      add_student(student)
-    end
+    try_to_add_student(student)
+  rescue NoMethodError
+    puts "#{student} is not a student. Not added"
   end
 
   def confirmed?
-    @students.all? do |id, _|
-      @students[id][:status] == STUDENT_STATUS[:CONFIRMED]
+    @students.all? do |_, student|
+      student[:status] == STUDENT_STATUS[:CONFIRMED]
     end
   end
 
@@ -44,19 +43,18 @@ class CourseGroup
     @students.size >= int
   end
 
+  def course_details
+    {
+      id: @course.id,
+      level: @course.level,
+      schedule: @course.schedule
+    }
+  end
+
   private
 
   def full?
     @students.size == @max_size
-  end
-
-  def add_student(student)
-    student.student?
-    return puts 'Course is full' if full?
-
-    try_to_add_student(student)
-  rescue NoMethodError
-    puts "#{student} is not a student. Not added"
   end
 
   def try_to_add_student(student)
@@ -75,12 +73,14 @@ class CourseGroup
   def add_student_if_type_match(student)
     return nil unless student.type?(@type)
     return nil unless student.level?(@course.level)
+    return nil if student.assigned?
     return nil unless @students[student.id].nil?
 
     @students[student.id] = {
       student: student,
       status: match_schedule_status(student)
     }
+    assign_student(student)
   end
 
   def match_schedule_status(schedulable)
@@ -89,5 +89,9 @@ class CourseGroup
     else
       STUDENT_STATUS[:WAITING_UNMATCH]
     end
+  end
+
+  def assign_student(student)
+    student.assign_course_group(self)
   end
 end

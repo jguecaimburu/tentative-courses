@@ -15,6 +15,9 @@ class Teacher
   LEVELS = %w[BEGINNER PRE_INTERMEDIATE INTERMEDIATE
               UPPER_INTERMEDIATE ADVANCED].freeze
 
+  COURSE_STATUS = { ASSIGNED: 2, CONFIRMED: 3 }.freeze
+
+  # id: Can't use hyphens (-)
   # availability: array of strings representing weekday-hour in
   # schedulable format
   def initialize(id:, availability:, levels:, max_courses:, priority: 5)
@@ -28,18 +31,11 @@ class Teacher
     @levels = levels
     @max_courses = max_courses
     @priority = priority
+    setup
   end
 
   def to_s
     puts "Teacher #{@id}."
-  end
-
-  def eql?(other)
-    @id == other.id
-  end
-
-  def hash
-    @id.hash
   end
 
   def teacher?
@@ -52,7 +48,7 @@ class Teacher
     @levels.include?(level)
   end
 
-  def build_graph_data(graph_data:, course_size:, student_requirements:)
+  def build_graph_data(graph_data:, course_size:, students_requirements:)
     add_own_edge_to_sink(
       graph_data: graph_data,
       capacity: @max_courses * course_size,
@@ -60,17 +56,38 @@ class Teacher
     )
     add_courses_data(
       graph_data: graph_data,
-      matched_requirements: match_requirements(student_requirements),
+      matched_requirements: match_requirements(students_requirements),
       course_size: course_size
     )
   end
 
+  def assign_course(course)
+    return false if full_assigned?
+    return false unless @courses[course.id].nil?
+
+    @courses[course.id] = {
+      course: course,
+      status: COURSE_STATUS[:ASSIGNED]
+    }
+    block_assigned_schedule(course.schedule)
+  end
+
+  def full_assigned?
+    (@max_courses - @confirmed_schedules.size - @assigned_schedules.size).zero?
+  end
+
   private
 
-  def match_requirements(student_requirements)
+  def setup
+    @courses = {}
+    @assigned_schedules = []
+    @confirmed_schedules = []
+  end
+
+  def match_requirements(students_requirements)
     {
-      levels: student_requirements[:levels] & Set.new(@levels),
-      availability: student_requirements[:availability] & Set.new(@availability)
+      levels: students_requirements[:levels] & Set.new(@levels),
+      availability: students_requirements[:availability] & Set.new(@availability)
     }
   end
 
@@ -85,5 +102,10 @@ class Teacher
         )
       end
     end
+  end
+
+  def block_assigned_schedule(schedule)
+    @availability.delete(schedule)
+    @assigned_schedules << schedule
   end
 end

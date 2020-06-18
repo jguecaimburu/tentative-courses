@@ -109,7 +109,7 @@ RSpec.describe Student do
       graph_data: graph_data_match,
       course_size: default_course_size
     )
-    expect(graph_data_match[:edges].size).to eq(2)
+    expect(graph_data_match[:edges].size).to eq(3)
   end
 
   it 'adds source and two edges to student' do
@@ -117,7 +117,7 @@ RSpec.describe Student do
       graph_data: graph_data_two_matches,
       course_size: default_course_size
     )
-    expect(graph_data_two_matches[:edges].size).to eq(3)
+    expect(graph_data_two_matches[:edges].size).to eq(4)
   end
 
   it 'does not add any edge if no match' do
@@ -125,7 +125,7 @@ RSpec.describe Student do
       graph_data: graph_data_tolerance,
       course_size: default_course_size
     )
-    expect(graph_data_tolerance[:edges].size).to eq(1)
+    expect(graph_data_tolerance[:edges].size).to eq(2)
   end
 
   it 'matches if no match but in tolerance' do
@@ -134,7 +134,7 @@ RSpec.describe Student do
       course_size: default_course_size,
       tolerance: tolerance
     )
-    expect(graph_data_tolerance[:edges].size).to eq(2)
+    expect(graph_data_tolerance[:edges].size).to eq(3)
   end
 
   it 'does not match if level not available' do
@@ -143,7 +143,7 @@ RSpec.describe Student do
       course_size: default_course_size,
       tolerance: tolerance
     )
-    expect(graph_data_no_match[:edges].size).to eq(1)
+    expect(graph_data_no_match[:edges].size).to eq(2)
   end
 
   it 'accumulates edges from different students' do
@@ -157,7 +157,7 @@ RSpec.describe Student do
       course_size: default_course_size,
       tolerance: tolerance
     )
-    expect(graph_data_match[:edges].size).to eq(4)
+    expect(graph_data_match[:edges].size).to eq(6)
   end
 
   it 'capacity of groupal for edge is 1' do

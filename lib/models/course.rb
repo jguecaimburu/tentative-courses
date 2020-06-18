@@ -9,7 +9,7 @@ class Course
     NOT_CONFIRMED: 1
   }.freeze
 
-  attr_reader :schedule, :level, :status
+  attr_reader :id, :schedule, :level, :status, :rejected_students
 
   def initialize(details)
     raise TypeError, 'id missing' if details[:id].nil?
@@ -26,6 +26,16 @@ class Course
 
   def size_at_least?(int)
     @group.size_at_least?(int)
+  end
+
+  def add_students(students)
+    return nil if students.nil?
+
+    @rejected_students = []
+
+    students.each do |student|
+      @rejected_students << student unless @group.add_student(student)
+    end
   end
 
   private
@@ -48,6 +58,7 @@ class Course
       teacher: details[:teacher],
       status: STATUS[:NOT_CONFIRMED]
     }
+    assign_teacher
   end
 
   def validate_teacher_details(details)
@@ -55,13 +66,18 @@ class Course
     teacher = details[:teacher]
     raise ValueError unless teacher.available?(details[:schedule])
     raise ValueError unless teacher.level?(details[:level])
+    raise ValueError if teacher.full_assigned?
   rescue NoMethodError
     puts "#{details[:teacher]} is not a teacher"
     raise
   end
 
+  def assign_teacher
+    @teacher[:teacher].assign_course(self)
+  end
+
   def process_optional(details)
     @group.config_size(details[:size])
-    @group.add_students(details[:students])
+    add_students(details[:students])
   end
 end
