@@ -93,10 +93,12 @@ RSpec.describe CourseScheduler do
     course_scheduler = CourseScheduler.new
     course_scheduler.bulk_add_students(forty_random_students)
     course_scheduler.bulk_add_teachers(ten_random_teachers)
-    course_scheduler.schedule_courses
+    courses = course_scheduler.schedule_courses
     unassigned = course_scheduler.unassigned_students
     execution_time = Time.now - start
     puts '40/10'
+    print 'Courses: '
+    puts courses.size
     print 'Unassigned: '
     puts unassigned.size
     print 'Execution time: '
@@ -111,8 +113,28 @@ RSpec.describe CourseScheduler do
     courses = course_scheduler.schedule_courses
     unassigned = course_scheduler.unassigned_students
     execution_time = Time.now - start
-    puts courses
     puts '200/50'
+    print 'Courses: '
+    puts courses.size
+    print 'Unassigned: '
+    puts unassigned.size
+    print 'Execution time: '
+    puts execution_time
+  end
+
+  it 'handles 2000 students and 700 teachers' do
+    puts 'Running longer test. 2000 students, 700 teachers.'
+    puts 'It may take a couple of minutes...'
+    start = Time.now
+    course_scheduler = CourseScheduler.new
+    course_scheduler.bulk_add_students(two_thousand_random_students)
+    course_scheduler.bulk_add_teachers(seven_hundred_random_teachers)
+    courses = course_scheduler.schedule_courses
+    unassigned = course_scheduler.unassigned_students
+    execution_time = Time.now - start
+    puts '200/50'
+    print 'Courses: '
+    puts courses.size
     print 'Unassigned: '
     puts unassigned.size
     print 'Execution time: '

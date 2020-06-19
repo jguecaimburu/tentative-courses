@@ -59,8 +59,10 @@ class SchedulingOrderProcessor
   end
 
   def correct_course_size
-    @scheduling_order[:course_size].positive?
-    @scheduling_order[:course_size].to_i
+    size = @scheduling_order[:course_size]
+    return size.to_i if size.to_i.positive?
+
+    DEFAULT_COURSE_SIZE
   rescue NoMethodError
     DEFAULT_COURSE_SIZE
   end

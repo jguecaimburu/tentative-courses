@@ -231,4 +231,28 @@ RSpec.shared_context 'course scheduler' do
       teachers << teacher
     end
   end
+
+  let(:two_thousand_random_students) do
+    (1..2000).each_with_object([]) do |_, students|
+      student = Student.new(
+        id: 'ST' + rand(900_000_000...1_000_000_000).to_s,
+        level: data_for_random[:levels].sample,
+        type: data_for_random[:types].sample,
+        availability: data_for_random[:schedules].sample(rand(1..10))
+      )
+      students << student
+    end
+  end
+
+  let(:seven_hundred_random_teachers) do
+    (1..700).each_with_object([]) do |_, teachers|
+      teacher = Teacher.new(
+        id: 'TC' + rand(900_000_000...1_000_000_000).to_s,
+        levels: data_for_random[:levels].sample(rand(1..5)),
+        max_courses: rand(1..5),
+        availability: data_for_random[:schedules].sample(rand(1..10))
+      )
+      teachers << teacher
+    end
+  end
 end

@@ -58,10 +58,9 @@ class CourseScheduler
   def schedule_courses(scheduling_orders: [])
     return nil if @students.empty? || @teachers.empty?
 
-    loop_count = 0
-    until all_students_processed? || loop_count == MAX_LOOP
+    MAX_LOOP.times do
       loop_scheduling_orders(scheduling_orders)
-      loop_count += 1
+      break if all_students_processed?
     end
     @scheduled_courses
   end

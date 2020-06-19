@@ -15,6 +15,7 @@ class AssignOrderInterpreter
     assign_orders.each_with_object({}) do |order, interpretations|
       next if order[0] == UNSOLVED_TRANSLATED_KEY
       next if order[1][:list].empty?
+      next unless interpretations[order[0]].nil?
 
       interpretations[order[0]] = build_interpretation(
         code: order[0],

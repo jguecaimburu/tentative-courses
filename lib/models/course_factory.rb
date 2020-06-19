@@ -54,6 +54,8 @@ class CourseFactory
     initial_courses_ids.each do |id|
       order = interpreted_orders[id]
       interpreted_orders.delete(id)
+      next unless order
+
       find_a_match_and_try_to_merge(order, interpreted_orders)
       manufacture_course(order[:details])
     end
@@ -62,9 +64,9 @@ class CourseFactory
   def find_a_match_and_try_to_merge(order, interpreted_orders)
     courses_ids = interpreted_orders.keys
     courses_ids.each do |other_id|
-      next unless interpreted_orders[other_id]
-
       other_order = interpreted_orders[other_id]
+      next unless other_order
+
       next unless match_to_merge?(order, other_order)
 
       interpreted_orders.delete(other_id)
