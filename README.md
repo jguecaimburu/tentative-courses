@@ -72,7 +72,7 @@ Estaría bueno:
 
 ### Cómo funciona
 
-Se utiliza la lista de estudiantes para inizializar la clase `Student`. Cada estudiante requiere:
+Se utiliza la lista de estudiantes para inicializar la clase `Student`. Cada estudiante requiere:
 
 * `id`: Identificador del estudiante. No puede contener guiones medios ('-').
 * `level`: Nivel de idioma. Opciones: `BEGINNER`, `PRE_INTERMEDIATE`, `INTERMEDIATE`, `UPPER_INTERMEDIATE`, `ADVANCED`.
